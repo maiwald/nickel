@@ -3,34 +3,37 @@
             [reagent.session :as session]))
 
 (defn build-board [n]
-  (partition n (repeatedly (* n n) #(rand-int 2))))
+  (mapv vec (partition n (repeatedly (* n n) #(rand-int 2)))))
 
 (defonce state
   (reagent/atom {:board (build-board 30)}))
 
-(defn cell-component [cell-content]
-  [:div
-   {:className "cell"}
-   [:div {:className (str "tile-" cell-content)}]])
+(defn set-tile-value [x y value]
+  (swap! state assoc-in [:board y x] value))
 
-(defn row-component [row-index row-content]
+(defn reset []
+  (swap! state assoc :board (build-board 30)))
+
+(defn cell-component [cell-content x y]
+  [:div {:className "cell"}
+   [:div {:className (str "tile tile-" cell-content)
+          :on-click #(set-tile-value x y (mod (inc cell-content) 2))}]])
+
+(defn row-component [y row-content]
   [:div
    {:className "row"}
-   (map-indexed (fn [cell-index cell-content]
-                  ^{:key (str "cell-" row-index cell-index)}
-                  [cell-component cell-content])
+   (map-indexed (fn [x cell-content]
+                  ^{:key (str "cell-" x y)}
+                  [cell-component cell-content x y])
                 row-content)])
 
 (defn board-component [board]
   [:div
    {:className "board"}
-   (map-indexed (fn [row-index row-content]
-                  ^{:key (str "row-" row-index)}
-                  [row-component row-index row-content])
+   (map-indexed (fn [y row-content]
+                  ^{:key (str "row-" y)}
+                  [row-component y row-content])
                 board)])
-
-(defn reset []
-  (swap! state assoc :board (build-board 30)))
 
 (defn home-page []
   [:div

@@ -18,18 +18,17 @@
   justify-content: center;
 }
 
-.tile-0 {
+.tile {
   width: 100%;
   height: 100%;
 
-  background-image: url('../img/path.png');
   background-size: contain;
 }
 
-.tile-1 {
-  width: 100%;
-  height: 100%;
+.tile-0 {
+  background-image: url('../img/path.png');
+}
 
+.tile-1 {
   background-image: url('../img/grass.png');
-  background-size: contain;
 }
