@@ -1,8 +1,9 @@
-.board {
+#board {
   display: flex;
+  position: relative;
   flex-direction: column;
-  width: 600px;
-  height: 600px;
+  width: 640px;
+  height: 640px;
 }
 
 .row {
@@ -19,10 +20,15 @@
 }
 
 .tile {
+  z-index: 0;
   width: 100%;
   height: 100%;
 
   background-size: contain;
+}
+
+.tile:hover {
+  opacity: 0.9;
 }
 
 .tile-0 {
@@ -31,4 +37,14 @@
 
 .tile-1 {
   background-image: url('../img/grass.png');
+}
+
+.entity {
+  z-index: 1;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  background-size: contain;
+  background-image: url('../img/enemy.png');
 }

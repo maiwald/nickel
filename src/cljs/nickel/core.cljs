@@ -2,22 +2,38 @@
   (:require [reagent.core :as reagent :refer [atom]]
             [reagent.session :as session]))
 
-(defn build-board [n]
-  (mapv vec (partition n (repeatedly (* n n) #(rand-int 2)))))
+(def board-size 20)
+(def board-width 640)
 
-(defonce state
-  (reagent/atom {:board (build-board 30)}))
+(defn build-board []
+  (mapv vec (partition board-size (repeatedly (* board-size board-size) #(rand-int 2)))))
 
-(defn set-tile-value [x y value]
-  (swap! state assoc-in [:board y x] value))
+(def initial-state {:board (build-board)
+                    :player [0 0]})
+
+(defonce state (reagent/atom initial-state))
+
+(defn set-player-position [x y]
+  (swap! state assoc :player [x y]))
 
 (defn reset []
-  (swap! state assoc :board (build-board 30)))
+  (reset! state initial-state))
+
+(defn coords-to-style [x y]
+  (let [increment (/ board-width board-size)]
+    {:width increment
+     :height increment
+     :top (* y increment)
+     :left (* x increment)}))
+
+(defn entity-component [x y]
+  [:div {:className "entity"
+         :style (coords-to-style x y)}])
 
 (defn cell-component [cell-content x y]
   [:div {:className "cell"}
    [:div {:className (str "tile tile-" cell-content)
-          :on-click #(set-tile-value x y (mod (inc cell-content) 2))}]])
+          :on-click #(set-player-position x y)}]])
 
 (defn row-component [y row-content]
   [:div
@@ -27,19 +43,22 @@
                   [cell-component cell-content x y])
                 row-content)])
 
-(defn board-component [board]
+(defn board-component [state]
   [:div
-   {:className "board"}
+   {:id "board"}
+   [entity-component
+    (first (:player state))
+    (second (:player state))]
    (map-indexed (fn [y row-content]
                   ^{:key (str "row-" y)}
                   [row-component y row-content])
-                board)])
+                (:board state))])
 
 (defn home-page []
   [:div
    [:h2 "Some Game"]
    [:p "it is the shit!"]
-   [board-component (:board @state)]
+   [board-component @state]
    [:a {:on-click reset} "reset"]])
 
 (defn init! []
