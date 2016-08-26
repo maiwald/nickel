@@ -1,7 +1,8 @@
 (ns nickel.repl
   (:use nickel.handler
         ring.server.standalone
-        [ring.middleware file-info file]))
+        [ring.middleware file-info file]
+        [figwheel-sidecar.repl-api :as ra]))
 
 (defonce server (atom nil))
 
@@ -30,3 +31,9 @@
 (defn stop-server []
   (.stop @server)
   (reset! server nil))
+
+(defn start [] (ra/start-figwheel!))
+
+(defn stop [] (ra/stop-figwheel!))
+
+(defn cljs [] (ra/cljs-repl "dev"))

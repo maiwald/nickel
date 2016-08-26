@@ -42,10 +42,6 @@
   :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources" "target/cljsbuild"]
 
-  :minify-assets
-  {:assets
-   {"resources/public/css/site.min.css" "resources/public/css/site.css"}}
-
   :cljsbuild
   {:builds {:min
             {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
@@ -66,27 +62,28 @@
               :pretty-print  true}}
             }}
 
-  :figwheel
-  {:http-server-root "public"
-   :server-port 3449
-   :nrepl-port 7002
-   :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"]
-   :css-dirs ["resources/public/css"]
-   :ring-handler nickel.handler/app}
-  :profiles {:dev {:repl-options {:init-ns nickel.repl}
-                   :dependencies [[ring/ring-mock "0.3.0"]
-                                  [ring/ring-devel "1.5.0"]
-                                  [prone "1.1.1"]
-                                  [figwheel-sidecar "0.5.4-5"]
-                                  [org.clojure/tools.nrepl "0.2.12"]
-                                  [com.cemerick/piggieback "0.2.2-SNAPSHOT"]
-                                  [pjstadig/humane-test-output "0.8.0"]]
+  :figwheel {:http-server-root "public"
+             :server-port 3449
+             :nrepl-port 7002
+             :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"]
+             :css-dirs ["resources/public/css"]
+             :ring-handler nickel.handler/app}
+  :profiles {:dev
+             {:repl-options {:init-ns nickel.repl
+                             :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
+              :dependencies [[ring/ring-mock "0.3.0"]
+                             [ring/ring-devel "1.5.0"]
+                             [prone "1.1.1"]
+                             [figwheel-sidecar "0.5.6"]
+                             [org.clojure/tools.nrepl "0.2.12"]
+                             [com.cemerick/piggieback "0.2.1"]
+                             [pjstadig/humane-test-output "0.8.0"]]
 
-                   :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.5.4-5"]]
-                   :injections [(require 'pjstadig.humane-test-output)
-                                (pjstadig.humane-test-output/activate!)]
-                   :env {:dev true}}
+              :source-paths ["env/dev/clj"]
+              :plugins [[lein-figwheel "0.5.6"]]
+              :injections [(require 'pjstadig.humane-test-output)
+                           (pjstadig.humane-test-output/activate!)]
+              :env {:dev true}}
 
              :uberjar {:hooks [minify-assets.plugin/hooks]
                        :source-paths ["env/prod/clj"]
