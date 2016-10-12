@@ -1,34 +1,18 @@
 (ns nickel.core
-  (:require [reagent.core :as reagent :refer [atom]]
-            [reagent.session :as session]))
+  (:require [nickel.state :as game]
+            [reagent.core :as reagent]))
 
-(def board-size 4)
-(def board-width 640)
-
-(defn build-board []
-  [[ 1 0 0 0 ]
-   [ 1 1 0 1 ]
-   [ 0 1 1 1 ]
-   [ 1 1 0 1 ]
-   ])
-
-(def initial-state {:board (build-board)
-                    :player [0 0]})
-
-(defonce state (reagent/atom initial-state))
-
-(defn set-player-position [x y]
-  (swap! state assoc :player [x y]))
-
-(defn reset []
-  (reset! state initial-state))
+(def display-width 640)
 
 (defn coords-to-style [x y]
-  (let [increment (/ board-width board-size)]
+  (let [increment (/ display-width game/board-size)]
     {:width increment
      :height increment
-     :top (* y increment)
+     :bottom (* y increment)
      :left (* x increment)}))
+
+(defn tile-class [content x y]
+  (str "tile tile-" content))
 
 (defn entity-component [x y]
   [:div {:className "entity"
@@ -36,23 +20,23 @@
 
 (defn cell-component [cell-content x y]
   [:div {:className "cell"}
-   [:div {:className (str "tile tile-" cell-content)
-          :on-click #(set-player-position x y)}]])
+   [:div {:className (tile-class cell-content x y)
+          :on-mouse-enter #(game/set-highlight-position [x y])
+          :on-click #(game/set-player-position [x y])}]])
 
 (defn row-component [y row-content]
   [:div
    {:className "row"}
    (map-indexed (fn [x cell-content]
-                  ^{:key (str "cell-" x y)}
+                  ^{:key (str "cell-x" x ",y" y)}
                   [cell-component cell-content x y])
                 row-content)])
 
 (defn board-component [state]
   [:div
-   {:id "board"}
-   [entity-component
-    (first (:player state))
-    (second (:player state))]
+   {:id "board"
+    :on-mouse-leave #(game/set-highlight-position nil)}
+   (apply entity-component (:player state))
    (map-indexed (fn [y row-content]
                   ^{:key (str "row-" y)}
                   [row-component y row-content])
@@ -62,8 +46,8 @@
   [:div
    [:h2 "Some Game"]
    [:p "it is the shit!"]
-   [board-component @state]
-   [:a {:on-click reset} "reset"]])
+   [board-component @game/state]
+   [:a {:on-click game/reset} "reset"]])
 
 (defn init! []
   (reagent/render [home-page] (.getElementById js/document "app")))

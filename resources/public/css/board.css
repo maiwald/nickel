@@ -1,7 +1,7 @@
 #board {
   display: flex;
   position: relative;
-  flex-direction: column;
+  flex-direction: column-reverse;
   width: 640px;
   height: 640px;
 }
@@ -27,7 +27,7 @@
   background-size: contain;
 }
 
-.tile:hover {
+.tile-highlighted {
   opacity: 0.9;
 }
 
