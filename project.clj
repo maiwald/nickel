@@ -14,7 +14,7 @@
                  [compojure "1.5.1"]
                  [hiccup "1.0.5"]
                  [yogthos/config "0.8"]
-                 [org.clojure/clojurescript "1.9.93"
+                 [org.clojure/clojurescript "1.9.229"
                   :scope "provided"]
                  [secretary "1.2.3"]
                  [venantius/accountant "0.1.7"
@@ -32,7 +32,7 @@
 
   :uberjar-name "nickel.jar"
 
-  :main nickel.server
+  :simple nickel.server
 
   :clean-targets ^{:protect false}
   [:target-path
@@ -43,24 +43,27 @@
   :resource-paths ["resources" "target/cljsbuild"]
 
   :cljsbuild
-  {:builds {:min
-            {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
-             :compiler
-             {:output-to "target/cljsbuild/public/js/app.js"
-              :output-dir "target/uberjar"
-              :optimizations :advanced
-              :pretty-print  false}}
-            :app
-            {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
-             :compiler
-             {:main "nickel.dev"
-              :asset-path "/js/out"
-              :output-to "target/cljsbuild/public/js/app.js"
-              :output-dir "target/cljsbuild/public/js/out"
-              :source-map true
-              :optimizations :none
-              :pretty-print  true}}
-            }}
+  {:test-commands {"unit" ["phantomjs"
+                           "resources/private/js/unit-test.js"
+                           "resources/private/html/unit-test.html"]}
+   :builds {
+            :min {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
+                  :compiler {:output-to "target/cljsbuild/public/js/app.js"
+                             :output-dir "target/uberjar"
+                             :optimizations :advanced
+                             :pretty-print  false}}
+            :app {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
+                  :compiler {:main "nickel.dev"
+                             :asset-path "js/out"
+                             :output-to "target/cljsbuild/public/js/app.js"
+                             :output-dir "target/cljsbuild/public/js/out"
+                             :source-map true
+                             :optimizations :none
+                             :pretty-print  true}}
+            :test {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs" "test/cljs"]
+                   :compiler {:main "nickel.test"
+                              :output-to "target/cljsbuild/public/js/test.js"
+                              :optimizations :simple}}}}
 
   :figwheel {:http-server-root "public"
              :server-port 3449

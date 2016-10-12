@@ -32,8 +32,12 @@
   (.stop @server)
   (reset! server nil))
 
-(defn start [] (ra/start-figwheel!))
+(defn start []
+  (start-server)
+  (ra/start-figwheel!))
 
-(defn stop [] (ra/stop-figwheel!))
+(defn stop []
+  (ra/stop-figwheel!)
+  (stop-server))
 
 (defn cljs [] (ra/cljs-repl "dev"))

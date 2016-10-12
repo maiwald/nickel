@@ -2,11 +2,15 @@
   (:require [reagent.core :as reagent :refer [atom]]
             [reagent.session :as session]))
 
-(def board-size 20)
+(def board-size 4)
 (def board-width 640)
 
 (defn build-board []
-  (mapv vec (partition board-size (repeatedly (* board-size board-size) #(rand-int 2)))))
+  [[ 1 0 0 0 ]
+   [ 1 1 0 1 ]
+   [ 0 1 1 1 ]
+   [ 1 1 0 1 ]
+   ])
 
 (def initial-state {:board (build-board)
                     :player [0 0]})
