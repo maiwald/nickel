@@ -1,11 +1,22 @@
 (ns nickel.core
-  (:require [nickel.state :as game]
+  (:require [nickel.game :as game]
+            [nickel.board :as board]
             [reagent.core :as reagent]))
 
+(defonce state
+  (reagent/atom game/initial-state))
+
+(defn reset []
+  (reset! state game/initial-state))
+
 (def display-width 640)
+(def board-size (board/size (:board @state)))
+
+(defn update-state! [f & args]
+  (apply swap! state f args))
 
 (defn coords-to-style [x y]
-  (let [increment (/ display-width game/board-size)]
+  (let [increment (/ display-width board-size)]
     {:width increment
      :height increment
      :bottom (* y increment)
@@ -21,8 +32,8 @@
 (defn cell-component [cell-content x y]
   [:div {:className "cell"}
    [:div {:className (tile-class cell-content x y)
-          :on-mouse-enter #(game/set-highlight-position [x y])
-          :on-click #(game/set-player-position [x y])}]])
+          :on-mouse-enter #(update-state! game/set-highlight-position [x y])
+          :on-click #(update-state! game/set-player-position [x y])}]])
 
 (defn row-component [y row-content]
   [:div
@@ -32,22 +43,23 @@
                   [cell-component cell-content x y])
                 row-content)])
 
-(defn board-component [state]
+(defn board-component [{:keys [player-position board]}]
   [:div
    {:id "board"
-    :on-mouse-leave #(game/set-highlight-position nil)}
-   (apply entity-component (:player state))
+    :on-mouse-leave #(update-state! game/set-highlight-position nil)}
+   (apply entity-component player-position)
    (map-indexed (fn [y row-content]
                   ^{:key (str "row-" y)}
                   [row-component y row-content])
-                (:board state))])
+                board)])
 
 (defn home-page []
   [:div
    [:h2 "Some Game"]
    [:p "it is the shit!"]
-   [board-component @game/state]
-   [:a {:on-click game/reset} "reset"]])
+   [board-component @state]
+   [:a {:on-click reset} "reset"]])
+
 
 (defn init! []
   (reagent/render [home-page] (.getElementById js/document "app")))
