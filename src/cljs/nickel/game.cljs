@@ -13,8 +13,18 @@
     state))
 
 (defn set-highlight-position [state coord]
-  (assoc state :highlight-position coord))
+  (if (board/coord-visitable? (:board state) coord)
+    (assoc state :highlight-position coord)
+    (assoc state :highlight-position nil)))
 
 (defn view-state [state]
   (let [{:keys [board highlight-position player-position]} state
-        paths (shortest-paths board player-position)]))
+        paths (shortest-paths board player-position)
+        highlighted-coords (if (nil? highlight-position)
+                             #{}
+                             (into #{highlight-position} (get paths highlight-position)))]
+    (assoc state :board (board/map-cells
+                          (fn [content x y]
+                            {:texture content
+                             :highlighted? (contains? highlighted-coords [x y])})
+                          (:board state)))))

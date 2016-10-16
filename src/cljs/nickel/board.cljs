@@ -38,9 +38,9 @@
 
 (defn map-cells [f board]
   (map-indexed
-    (fn [x row]
+    (fn [y row]
       (map-indexed
-        (fn [y cell]
+        (fn [x cell]
           (f (get-tile board [x y]) x y))
         row))
     board))

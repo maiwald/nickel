@@ -22,8 +22,11 @@
      :bottom (* y increment)
      :left (* x increment)}))
 
-(defn tile-class [content x y]
-  (str "tile tile-" content))
+(defn tile-class [{:keys [texture highlighted?]}]
+  (clojure.string/join " " [
+             "tile"
+             (str "tile-" texture)
+             (if highlighted? (str "tile-highlighted"))]))
 
 (defn entity-component [x y]
   [:div {:className "entity"
@@ -31,7 +34,7 @@
 
 (defn cell-component [cell-content x y]
   [:div {:className "cell"}
-   [:div {:className (tile-class cell-content x y)
+   [:div {:className (tile-class cell-content)
           :on-mouse-enter #(update-state! game/set-highlight-position [x y])
           :on-click #(update-state! game/set-player-position [x y])}]])
 
@@ -57,7 +60,7 @@
   [:div
    [:h2 "Some Game"]
    [:p "it is the shit!"]
-   [board-component @state]
+   [board-component (game/view-state @state)]
    [:a {:on-click reset} "reset"]])
 
 
