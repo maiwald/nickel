@@ -22,11 +22,8 @@
      :bottom (* y increment)
      :left (* x increment)}))
 
-(defn tile-class [{:keys [texture highlighted?]}]
-  (clojure.string/join " " [
-             "tile"
-             (str "tile-" texture)
-             (if highlighted? (str "tile-highlighted"))]))
+(defn tile-class [texture]
+  (str "tile tile-" texture))
 
 (defn entity-component [x y]
   [:div {:className "entity"
@@ -46,11 +43,18 @@
                   [cell-component cell-content x y])
                 row-content)])
 
-(defn board-component [{:keys [player-position board]}]
+(defn highlight-component [{:keys [position in-range?]}]
+  ^{:key (str "highlight-" position)}
+  [:div {:className (str "tile-highlight tile-highlight-"
+                         (if in-range? "in-range" "not-in-range"))
+         :style (apply coords-to-style position)}])
+
+(defn board-component [{:keys [player-position board highlights]}]
   [:div
    {:id "board"
     :on-mouse-leave #(update-state! game/set-highlight-position nil)}
    (apply entity-component player-position)
+   (map #(highlight-component %1) highlights)
    (map-indexed (fn [y row-content]
                   ^{:key (str "row-" y)}
                   [row-component y row-content])

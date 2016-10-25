@@ -21,10 +21,10 @@
   (let [{:keys [board highlight-position player-position]} state
         paths (shortest-paths board player-position)
         highlighted-coords (if (nil? highlight-position)
-                             #{}
-                             (into #{highlight-position} (get paths highlight-position)))]
-    (assoc state :board (board/map-cells
-                          (fn [content x y]
-                            {:texture content
-                             :highlighted? (contains? highlighted-coords [x y])})
-                          (:board state)))))
+                             []
+                             (conj (get paths highlight-position) highlight-position))]
+    (assoc state :highlights (map-indexed
+                               (fn [index position]
+                                 {:position position
+                                  :in-range? (< index 8)})
+                               (reverse highlighted-coords)))))
