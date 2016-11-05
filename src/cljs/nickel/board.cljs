@@ -33,7 +33,7 @@
 (defn set-tile [board [x y] value]
   (assoc-in board [y x] value))
 
-(defn coord-visitable? [board coord]
+(defn ^boolean coord-visitable? [board coord]
   (= 1 (get-tile board coord)))
 
 (defn map-cells [f board]

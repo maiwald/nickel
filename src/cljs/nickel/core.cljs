@@ -43,7 +43,7 @@
                   [cell-component cell-content x y])
                 row-content)])
 
-(defn highlight-component [{:keys [position in-range?]}]
+(defn highlight-component [{:keys [position ^boolean in-range?]}]
   ^{:key (str "highlight-" position)}
   [:div {:className (str "tile-highlight tile-highlight-"
                          (if in-range? "in-range" "not-in-range"))
