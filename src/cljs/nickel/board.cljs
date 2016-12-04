@@ -35,12 +35,3 @@
 
 (defn ^boolean coord-visitable? [board coord]
   (= 1 (get-tile board coord)))
-
-(defn map-cells [f board]
-  (map-indexed
-    (fn [y row]
-      (map-indexed
-        (fn [x cell]
-          (f (get-tile board [x y]) x y))
-        row))
-    board))
