@@ -3,9 +3,15 @@
             [nickel.pathfinding :refer [shortest-paths]]))
 
 (def initial-state
-  {:board (board/build-board)
-   :highlight-position nil
-   :player-position [0 0]})
+  (let [board (board/build-board)]
+    {:board board
+     :highlight-position nil
+     :player-position [0 0]
+     :enemy-positions (list
+                        [18 18]
+                        [6 14]
+                        [17 11])
+     }))
 
 (defn set-player-position [state coord]
   (if (board/coord-visitable? (:board state) coord)

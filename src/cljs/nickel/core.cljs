@@ -25,8 +25,8 @@
 (defn tile-class [texture]
   (str "tile tile-" texture))
 
-(defn entity-component [x y]
-  [:div {:className "entity"
+(defn entity-component [entity-type [x y]]
+  [:div {:className (str "entity entity-" entity-type)
          :style (coords-to-style x y)}])
 
 (defn cell-component [cell-content x y]
@@ -49,11 +49,15 @@
                          (if in-range? "in-range" "not-in-range"))
          :style (apply coords-to-style position)}])
 
-(defn board-component [{:keys [player-position board highlights]}]
+(defn board-component [{:keys [player-position enemy-positions board highlights]}]
   [:div
    {:id "board"
     :on-mouse-leave #(update-state! game/set-highlight-position nil)}
-   (apply entity-component player-position)
+   [entity-component "player" player-position]
+   (map-indexed (fn [index position]
+                  ^{:key (str "enemy-" index)}
+                  [entity-component "enemy" position])
+                enemy-positions)
    (map #(highlight-component %1) highlights)
    (map-indexed (fn [y row-content]
                   ^{:key (str "row-" y)}

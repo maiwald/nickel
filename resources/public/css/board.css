@@ -57,5 +57,12 @@
   height: 100%;
 
   background-size: contain;
+}
+
+.entity-enemy {
   background-image: url('../img/enemy.png');
+}
+
+.entity-player {
+  background-image: url('../img/player.png');
 }
