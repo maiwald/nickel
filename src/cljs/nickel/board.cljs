@@ -33,5 +33,16 @@
 (defn set-tile [board [x y] value]
   (assoc-in board [y x] value))
 
-(defn ^boolean coord-visitable? [board coord]
+(defn ^boolean is-path? [board coord]
   (= 1 (get-tile board coord)))
+
+(defn ^boolean is-wall? [board coord]
+  (not (is-path? board coord)))
+
+(defn filtered-coords [board filter-fn]
+  (let [board-size (size board)]
+    (set (for [x (range board-size)
+               y (range board-size)
+               :when ^boolean (filter-fn [x y])]
+           [x y]))))
+

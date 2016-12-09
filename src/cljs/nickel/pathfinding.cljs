@@ -1,13 +1,5 @@
 (ns nickel.pathfinding
-  (:require [nickel.board :refer [coord-visitable?]]
-            [clojure.set :refer [intersection]]))
-
-(def visitable-coords (memoize (fn [board]
-  (let [board-size (count board)]
-    (set (for [x (range board-size)
-               y (range board-size)
-               :when (coord-visitable? board [x y])]
-           [x y]))))))
+  (:require [clojure.set :refer [intersection]]))
 
 (defn neighbours [[x y]]
   #{
@@ -16,11 +8,6 @@
     [x (+ y 1)]
     [x (- y 1)]
     })
-
-(defn visitable-neighbours [board position]
-  (intersection
-    (visitable-coords board)
-    (neighbours position)))
 
 (defn closest-node [paths nodes]
   (let [node-length #(if (seq? (get paths %))
@@ -40,16 +27,18 @@
     paths
     neighbours))
 
-(defn dijkstra [board source]
-  (loop [nodes (visitable-coords board)
+(defn ^boolean no-visitable-coords-left? [paths nodes]
+  (or (empty? nodes)
+      (every? nil? (map #(get paths %1) nodes))))
+
+
+(defn shortest-paths [visitable-coords source]
+  (loop [nodes visitable-coords
          paths (assoc (zipmap nodes (repeat nil)) source (list))]
-    (if (or (empty? nodes)
-            (every? nil? (vals (select-keys paths nodes))))
+    (if (no-visitable-coords-left? paths nodes)
       paths
       (let [node (closest-node paths nodes)
-            neighbours (visitable-neighbours board node)]
+            neighbours (intersection visitable-coords (neighbours node))]
         (recur
           (disj nodes node)
           (shorten-paths paths node neighbours))))))
-
-(def shortest-paths (memoize dijkstra))

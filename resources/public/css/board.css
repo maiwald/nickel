@@ -51,6 +51,7 @@
 }
 
 .entity {
+  pointer-events: none;
   z-index: 2;
   position: absolute;
   width: 100%;

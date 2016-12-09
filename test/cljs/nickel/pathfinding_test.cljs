@@ -1,14 +1,12 @@
 (ns nickel.pathfinding-test
   (:require [cljs.test :refer-macros [deftest testing is]]
-            [nickel.board :refer [set-tile]]
             [nickel.pathfinding :as p]))
 
-(def example-board
-  (into [] (reverse
-             [[ 1 0 0 0 ]     ; [ A # # # ]
-              [ 1 1 1 1 ]     ; [ B C D E ]
-              [ 0 1 0 1 ]     ; [ # F # G ]
-              [ 1 1 0 1 ]]))) ; [ H I # J ]
+; example board
+; [ A # # # ]
+; [ B C D E ]
+; [ # F # G ]
+; [ H I # J ]
 
 (def A [0 3])
 (def B [0 2])
@@ -21,16 +19,7 @@
 (def I [1 0])
 (def J [3 0])
 
-(deftest visitable-neighbours-test
-  (testing "retrieving visitable neighbours"
-    (is (= (p/visitable-neighbours example-board D)
-           #{C E}))
-    (is (= (p/visitable-neighbours example-board C)
-           #{B F D}))
-    (is (= (p/visitable-neighbours example-board E)
-           #{D G}))
-    (is (= (p/visitable-neighbours example-board J)
-           #{G}))))
+(def example-coords #{A B C D E F G H I J})
 
 (deftest shorten-paths-test
   (testing "shortening nil values"
@@ -51,7 +40,7 @@
 
 (deftest dijkstra-test
   (testing "retrieving shortest paths from source"
-    (let [result (p/dijkstra example-board D)]
+    (let [result (p/shortest-paths example-coords D)]
       (is (= result
              {A (list B C D)
               B (list C D)
@@ -65,8 +54,8 @@
               J (list G E D)}))))
 
   (testing "retrieving shortest paths with unreacheable nodes"
-    (let [unreacheable-board (set-tile example-board G 0)
-          result (p/dijkstra unreacheable-board D)]
+    (let [unreacheable-coords (disj example-coords G)
+          result (p/shortest-paths unreacheable-coords D)]
       (is (= result
              {A (list B C D)
               B (list C D)
