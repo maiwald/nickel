@@ -35,18 +35,18 @@
 }
 
 .tile-highlight-in-range {
-  background-color: blue;
-}
-
-.tile-highlight-not-in-range {
   background-color: yellow;
 }
 
-.tile-0 {
-  background-image: url('../img/path.png');
+.tile-highlight-not-in-range {
+  background-color: red;
 }
 
-.tile-1 {
+.tile-wall {
+  background-image: url('../img/wall.png');
+}
+
+.tile-path {
   background-image: url('../img/grass.png');
 }
 

@@ -22,25 +22,27 @@
      :bottom (* y increment)
      :left (* x increment)}))
 
-(defn tile-class [texture]
-  (str "tile tile-" texture))
-
 (defn entity-component [entity-type [x y]]
   [:div {:className (str "entity entity-" entity-type)
          :style (coords-to-style x y)}])
 
-(defn cell-component [cell-content x y]
+(defn cell-class [cell-type]
+  (let [texture-map {0 "wall"
+                     1 "path"}]
+  (str "tile tile-" (get texture-map cell-type))))
+
+(defn cell-component [cell-type x y]
   [:div {:className "cell"}
-   [:div {:className (tile-class cell-content)
+   [:div {:className (cell-class cell-type)
           :on-mouse-enter #(update-state! game/set-highlight-position [x y])
           :on-click #(update-state! game/set-player-position [x y])}]])
 
 (defn row-component [y row-content]
   [:div
    {:className "row"}
-   (map-indexed (fn [x cell-content]
+   (map-indexed (fn [x cell-type]
                   ^{:key (str "cell-x" x ",y" y)}
-                  [cell-component cell-content x y])
+                  [cell-component cell-type x y])
                 row-content)])
 
 (defn highlight-component [{:keys [position ^boolean in-range?]}]
