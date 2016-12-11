@@ -31,12 +31,15 @@
   (or (empty? nodes)
       (every? nil? (map #(get paths %1) nodes))))
 
+(defn format-result [paths]
+  (reduce-kv (fn [m k v]
+               (assoc m k (if (nil? v) v (-> (conj v k) reverse vec)))) {} paths))
 
 (defn shortest-paths [visitable-coords source]
   (loop [nodes visitable-coords
          paths (assoc (zipmap nodes (repeat nil)) source (list))]
     (if (no-visitable-coords-left? paths nodes)
-      paths
+      (format-result paths)
       (let [node (closest-node paths nodes)
             neighbours (intersection visitable-coords (neighbours node))]
         (recur

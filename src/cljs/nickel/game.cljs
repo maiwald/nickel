@@ -46,11 +46,9 @@
 
 (defn view-state [state]
   (let [{:keys [highlight-position player-paths]} state
-        highlighted-coords (if (nil? highlight-position)
-                             []
-                             (conj (get player-paths highlight-position) highlight-position))]
+        highlighted-coords (get player-paths highlight-position [])]
     (assoc state :highlights (map-indexed
                                (fn [index position]
                                  {:position position
-                                  :in-range? (>= player-movement-limit index)})
-                               (reverse highlighted-coords)))))
+                                  :in-range? (> player-movement-limit index)})
+                               highlighted-coords))))

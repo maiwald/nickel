@@ -25,45 +25,44 @@
   (testing "shortening nil values"
     (let [paths {B (list A) C nil}
           result (p/shorten-paths paths B #{C})]
-      (is (= result
-             {B (list A) C (list B A)}))))
+      (is (= (get result B) (list A)))
+      (is (= (get result C) (list B A)))))
   (testing "shortening longer paths"
     (let [paths {B (list A) C (list G E D)}
           result (p/shorten-paths paths B #{C})]
-      (is (= result
-             {B (list A) C (list B A)})))))
+      (is (= (get result B) (list A)))
+      (is (= (get result C) (list B A)))))
   (testing "keeping shorter or equal paths"
     (let [paths {B (list A) C (list F) D (list E G)}
           result (p/shorten-paths paths B #{C D})]
-      (is (= result
-             {B (list A) C (list F) D (list E G)}))))
+      (is (= (get result B) (list A)))
+      (is (= (get result C) (list F)))
+      (is (= (get result D) (list E G))))))
 
 (deftest dijkstra-test
   (testing "retrieving shortest paths from source"
     (let [result (p/shortest-paths example-coords D)]
-      (is (= result
-             {A (list B C D)
-              B (list C D)
-              C (list D)
-              D '()
-              E (list D)
-              F (list C D)
-              G (list E D)
-              H (list I F C D)
-              I (list F C D)
-              J (list G E D)}))))
+      (is (= (get result A) [D C B A]))
+      (is (= (get result B) [D C B]))
+      (is (= (get result C) [D C]))
+      (is (= (get result D) [D]))
+      (is (= (get result E) [D E]))
+      (is (= (get result F) [D C F]))
+      (is (= (get result G) [D E G]))
+      (is (= (get result H) [D C F I H]))
+      (is (= (get result I) [D C F I]))
+      (is (= (get result J) [D E G J]))))
 
   (testing "retrieving shortest paths with unreacheable nodes"
     (let [unreacheable-coords (disj example-coords G)
           result (p/shortest-paths unreacheable-coords D)]
-      (is (= result
-             {A (list B C D)
-              B (list C D)
-              C (list D)
-              D '()
-              E (list D)
-              F (list C D)
-              ; G (list E D) no longer a node
-              H (list I F C D)
-              I (list F C D)
-              J nil})))))
+      (is (= (get result A) [D C B A]))
+      (is (= (get result B) [D C B]))
+      (is (= (get result C) [D C]))
+      (is (= (get result D) [D]))
+      (is (= (get result E) [D E]))
+      (is (= (get result F) [D C F]))
+      ; G is no longer a node
+      (is (= (get result H) [D C F I H]))
+      (is (= (get result I) [D C F I]))
+      (is (= (get result J) nil)))))
