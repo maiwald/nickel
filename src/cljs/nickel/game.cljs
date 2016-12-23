@@ -17,8 +17,7 @@
     (assoc state :player-paths (shortest-paths visitable-coords player-position))))
 
 (def initial-state
-  (let [board (board/build-board)
-        state {:board board
+  (let [state {:board (board/build-board)
                :enemy-positions #{[13 15] [6 14] [17 11]}
                :highlight-position nil
                :player-paths nil

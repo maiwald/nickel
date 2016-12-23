@@ -1,48 +1,57 @@
-(ns nickel.board)
+(ns nickel.board
+  (:require [clojure.set :refer [union]]))
 
-(defn build-board []
-  (into [] (reverse
-             [[ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ]
-              [ 0 1 0 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 0 ]
-              [ 0 1 1 1 0 0 0 0 0 0 1 1 1 0 0 0 1 0 0 0 ]
-              [ 0 1 0 1 0 0 1 1 1 1 1 0 1 0 0 1 1 1 1 0 ]
-              [ 0 0 0 1 1 1 1 0 0 1 0 0 1 1 1 1 0 1 0 0 ]
-              [ 0 0 1 1 0 0 1 0 0 1 0 1 1 0 0 1 0 1 0 0 ]
-              [ 0 1 1 1 1 0 1 0 0 1 1 1 1 1 0 1 0 1 0 0 ]
-              [ 0 1 0 1 1 0 1 1 1 1 0 0 1 1 0 1 1 1 1 0 ]
-              [ 0 1 0 1 1 0 1 1 1 1 0 0 1 1 0 1 1 1 1 0 ]
-              [ 0 0 0 0 1 0 1 0 0 1 0 0 0 0 0 1 0 0 0 0 ]
-              [ 0 1 0 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 0 ]
-              [ 0 1 1 1 0 0 0 0 0 0 1 1 1 0 0 0 0 0 1 0 ]
-              [ 1 1 0 1 0 0 1 1 1 1 1 0 1 0 0 1 1 1 1 0 ]
-              [ 1 0 0 1 1 1 1 0 0 1 0 0 1 1 1 1 0 1 0 0 ]
-              [ 1 0 1 1 0 0 1 0 0 1 0 1 1 0 0 1 0 1 0 0 ]
-              [ 1 0 1 1 1 0 1 0 0 1 0 1 1 1 0 1 0 1 0 0 ]
-              [ 1 0 1 1 1 0 1 1 0 1 0 0 0 1 0 1 0 1 0 0 ]
-              [ 1 0 0 1 1 0 1 0 0 1 0 0 0 1 0 1 0 1 1 0 ]
-              [ 1 0 0 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 0 ]
-              [ 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ]
-              ])))
+(def test-board-proto
+  (vec (reverse
+         [[ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ]
+          [ 0 1 0 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 0 ]
+          [ 0 1 1 1 0 0 0 0 0 0 1 1 1 0 0 0 1 0 0 0 ]
+          [ 0 1 0 1 0 0 1 1 1 1 1 0 1 0 0 1 1 1 1 0 ]
+          [ 0 0 0 1 1 1 1 0 0 1 0 0 1 1 1 1 0 1 0 0 ]
+          [ 0 0 1 1 0 0 1 0 0 1 0 1 1 0 0 1 0 1 0 0 ]
+          [ 0 1 1 1 1 0 1 0 0 1 1 1 1 1 0 1 0 1 0 0 ]
+          [ 0 1 0 1 1 0 1 1 1 1 0 0 1 1 0 1 1 1 1 0 ]
+          [ 0 1 0 1 1 0 1 1 1 1 0 0 1 1 0 1 1 1 1 0 ]
+          [ 0 0 0 0 1 0 1 0 0 1 0 0 0 0 0 1 0 0 0 0 ]
+          [ 0 1 0 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 0 ]
+          [ 0 1 1 1 0 0 0 0 0 0 1 1 1 0 0 0 0 0 1 0 ]
+          [ 1 1 0 1 0 0 1 1 1 1 1 0 1 0 0 1 1 1 1 0 ]
+          [ 1 0 0 1 1 1 1 0 0 1 0 0 1 1 1 1 0 1 0 0 ]
+          [ 1 0 1 1 0 0 1 0 0 1 0 1 1 0 0 1 0 1 0 0 ]
+          [ 1 0 1 1 1 0 1 0 0 1 0 1 1 1 0 1 0 1 0 0 ]
+          [ 1 0 1 1 1 0 1 1 0 1 0 0 0 1 0 1 0 1 0 0 ]
+          [ 1 0 0 1 1 0 1 0 0 1 0 0 0 1 0 1 0 1 1 0 ]
+          [ 1 0 0 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 0 ]
+          [ 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ]
+          ])))
 
-(defn size [board]
-  (count board))
-
-(defn get-tile [board [x y]]
+(defn get-tile-value [board [x y]]
   (get-in board [y x]))
 
-(defn set-tile [board [x y] value]
-  (assoc-in board [y x] value))
+(defn convert-to-board [proto]
+  (let [size (count proto)
+        coords (set (for [x (range size) y (range size)] [x y]))]
+    (reduce
+      (fn [board coord]
+        (let [target (case (get-tile-value test-board-proto coord)
+                       0 :walls
+                       1 :paths)]
+          (update board target conj coord)))
+      {:size size :paths #{} :walls #{}}
+      coords)))
+
+(defn build-board []
+  (print (convert-to-board test-board-proto))
+  (convert-to-board test-board-proto))
+
+(defn size [board]
+  (:size board))
 
 (defn ^boolean is-path? [board coord]
-  (= 1 (get-tile board coord)))
+  (contains? (:paths board) coord))
 
 (defn ^boolean is-wall? [board coord]
-  (not (is-path? board coord)))
+  (contains? (:walls board) coord))
 
-(defn filtered-coords [board filter-fn]
-  (let [board-size (size board)]
-    (set (for [x (range board-size)
-               y (range board-size)
-               :when ^boolean (filter-fn [x y])]
-           [x y]))))
-
+(defn filtered-coords [{:keys [paths walls]} filter-fn]
+  (filter filter-fn (union paths walls)))
