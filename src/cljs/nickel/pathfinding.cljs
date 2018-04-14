@@ -33,7 +33,11 @@
 
 (defn format-result [paths]
   (reduce-kv (fn [m k v]
-               (assoc m k (if (nil? v) v (-> (conj v k) reverse vec)))) {} paths))
+               (assoc m k (if (some? v)
+                            (-> (conj v k) reverse vec)
+                            v)))
+             {}
+             paths))
 
 (defn shortest-paths [visitable-coords source]
   (loop [nodes visitable-coords

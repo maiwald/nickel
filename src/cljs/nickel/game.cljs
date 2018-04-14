@@ -27,22 +27,16 @@
     (reduce-player-paths state)
    ))
 
-(defn reduce-enemy-positions [{:keys [enemy-positions] :as state}]
-  (assoc state :enemy-positions enemy-positions))
-
 (defn set-player-position [state coord]
   (if (and
         (coord-visitable? state coord)
         (player-can-reach? state coord))
     (->> (assoc state :player-position coord)
-         reduce-enemy-positions
          reduce-player-paths)
     state))
 
 (defn set-highlight-position [state coord]
-  (if (coord-visitable? state coord)
-    (assoc state :highlight-position coord)
-    (assoc state :highlight-position nil)))
+  (assoc state :highlight-position (when (coord-visitable? state coord) coord)))
 
 (defn view-state [state]
   (let [{:keys [highlight-position player-paths]} state
