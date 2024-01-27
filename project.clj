@@ -12,6 +12,7 @@
                  [compojure "1.5.1"]
                  [hiccup "1.0.5"]
                  [yogthos/config "0.8"]
+                 [javax.xml.bind/jaxb-api "2.3.0"]
                  [org.clojure/clojurescript "1.9.229"
                   :scope "provided"]]
 
